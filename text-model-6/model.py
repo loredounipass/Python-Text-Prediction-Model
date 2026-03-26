@@ -90,7 +90,7 @@ def normalize_text(text):
     tokens = [t.lemma_ for t in doc if t.is_alpha or t.is_digit]
     return ' '.join(tokens)
 
-def augment_texts(texts, completions, metadata_list, intent_list):
+def augment_texts_and_responses(texts, completions, metadata_list, intent_list):
     augmented_texts = []
     augmented_completions = []
     augmented_metadata = []
@@ -107,9 +107,41 @@ def augment_texts(texts, completions, metadata_list, intent_list):
         'app': ['aplicación', 'plataforma', 'sistema'],
         'ayuda': ['soporte', 'asistencia', 'auxilio'],
         'problema': ['incidente', 'inconveniente', 'dificultad'],
-        'mapa': ['navegación', 'ruta', 'guía']
+        'mapa': ['navegación', 'ruta', 'guía'],
+        'informacion': ['datos', 'detalles', 'esclarecimiento'],
+        'servicio': ['atención', 'beneficio', 'facilidad'],
+        'disponible': ['accessible', 'habilitado', 'operativo'],
+        'problema': ['inconveniente', 'dificultad', 'obstáculo'],
+        'ayuda': ['asistencia', 'soporte', 'respaldo']
     }
     
+    # Response variation patterns - modify responses to create semantically similar alternatives
+    response_variations = {
+        # Beginnings
+        'Puedes': ['Podrías', 'Se puede', 'Está disponible la opción de', 'Tienes la posibilidad de'],
+        'En': ['Dentro de', 'En el área de', 'En relación a', 'Concerniente a'],
+        'Si': ['En caso de que', 'Cuando', 'Si llegas a', 'En la situación de'],
+        'Sí,': ['Exactamente,', 'Correcto,', 'Así es,', 'Claro que sí,'],
+        'Para': ['Con el fin de', 'Con el objetivo de', 'Con el propósito de', 'Con la intención de'],
+        
+        # Middles/Connectors
+        'puedes': ['tienes la opción de', 'es posible', 'se puede', 'está disponible'],
+        'debe': ['tiene que', 'requiere que', 'es necesario que', 'se espera que'],
+        'es': ['se encuentra', 'está', 'resulta ser', 'representa'],
+        'tienes': ['dispones de', 'puedes acceder a', 'tienes acceso a', 'cuentas con'],
+        
+        # Endings
+        'SafeRide.': ['SafeRide hoy.', 'SafeRide siempre.', 'SafeRide constantemente.', 'el servicio SafeRide.'],
+        'app.': ['aplicación.', 'plataforma.', 'sistema.', 'herramienta.'],
+        'ayudarte?': ['asistirte?', 'servirte?', 'ayudarte en lo que necesites?'],
+        'real.': ['verdadera.', 'efectiva.', 'operativa.', 'funcional.'],
+        'hoy?': ['ahora?', 'en este momento?', 'actualmente?', 'en tiempo real?'],
+        'viaje.': ['traslado.', 'recorrido.', 'servicio de transporte.', 'experiencia de viaje.'],
+        'conductor.': ['chofer.', 'operador.', 'profesional del volante.', 'personal capacitado.'],
+        'confirmar.': ['validar.', 'verificar.', 'asegurar.', 'estabilizar.']
+    }
+    
+    # Augment prompts (as before)
     for i, t in enumerate(texts):
         words = t.lower().split()
         if len(words) > 0:
@@ -131,7 +163,7 @@ def augment_texts(texts, completions, metadata_list, intent_list):
                     new_words.append(word)
             words = new_words
             
-            # Technique 4: Add random Spanish words occasionally
+                    # Technique 4: Add random Spanish words occasionally
             if np.random.random() < 0.1:
                 extra_words = ['por favor', 'gracias', 'hola', 'ayuda', 'información']
                 insert_pos = np.random.randint(0, len(words) + 1)
@@ -142,7 +174,83 @@ def augment_texts(texts, completions, metadata_list, intent_list):
         augmented_metadata.append(metadata_list[i])
         augmented_intents.append(intent_list[i])
          
-    # Also add some variations by changing case and adding punctuation
+    # Now augment the responses to create variations
+    for i, response in enumerate(completions):
+        # Always keep the original
+        augmented_texts.append(texts[i])  # Original prompt
+        augmented_completions.append(response)  # Original response
+        augmented_metadata.append(metadata_list[i])
+        augmented_intents.append(intent_list[i])
+        
+        # Create 2-3 variations of each response
+        num_variations = np.random.randint(2, 4)  # 2 or 3 variations per response
+        
+        for _ in range(num_variations):
+            varied_response = response
+            
+            # Apply variations to the response
+            # 1. Vary beginnings
+            for original, alternatives in response_variations.items():
+                if original in varied_response and np.random.random() < 0.3:
+                    replacement = np.random.choice(alternatives)
+                    varied_response = varied_response.replace(original, replacement, 1)
+            
+            # 2. Apply synonym replacement to key words in response
+            response_words = varied_response.split()
+            new_response_words = []
+            for word in response_words:
+                # Clean word for lookup (remove punctuation)
+                clean_word = word.strip('.,!?;:')
+                if clean_word.lower() in synonyms and np.random.random() < 0.2:
+                    # Replace with synonym, preserving original punctuation
+                    replacement = np.random.choice(synonyms[clean_word.lower()])
+                    # Reattach punctuation if any
+                    if len(word) > len(clean_word):
+                        replacement += word[len(clean_word):]
+                    new_response_words.append(replacement)
+                else:
+                    new_response_words.append(word)
+            varied_response = ' '.join(new_response_words)
+            
+            # 3. Occasionally add polite phrases
+            if np.random.random() < 0.15:
+                polite_phrases = [
+                    "Por favor, recuerda que ",
+                    "Ten en cuenta que ",
+                    "Es importante mencionar que ",
+                    "Aclaramos que ",
+                    "Adicionalmente, "
+                ]
+                if np.random.random() < 0.5:
+                    # Add at beginning
+                    varied_response = np.random.choice(polite_phrases) + varied_response.lower()
+                else:
+                    # Add at end (before punctuation if any)
+                    if varied_response.endswith('.'):
+                        varied_response = varied_response[:-1] + ', ' + np.random.choice(polite_phrases).lower() + '.'
+                    else:
+                        varied_response = varied_response + ', ' + np.random.choice(polite_phrases).lower()
+            
+            # 4. Occasionally vary formality level
+            if np.random.random() < 0.1:
+                formal_mappings = {
+                    'tienes': 'usted tiene',
+                    'puedes': 'usted puede',
+                    'es': 'se encuentra',
+                    'vienes': 'usted viene',
+                    'quieres': 'usted desea'
+                }
+                for informal, formal in formal_mappings.items():
+                    if informal in varied_response and np.random.random() < 0.3:
+                        varied_response = varied_response.replace(informal, formal)
+            
+            # Add the varied response
+            augmented_texts.append(texts[i])  # Use original prompt
+            augmented_completions.append(varied_response)
+            augmented_metadata.append(metadata_list[i])
+            augmented_intents.append(intent_list[i])
+         
+    # Also add some variations by changing case and adding punctuation (for prompts only)
     for i, t in enumerate(texts[:len(texts)//2]):  # Only augment half to avoid too much noise
         # Add variation with punctuation
         if np.random.random() < 0.3:
@@ -199,12 +307,12 @@ for conv in data:
         expanded_intents.append(intent)
 
 # Normalizar textos
-prompts = [normalize_text(p) for p in expanded_prompts]
+    prompts = [normalize_text(p) for p in expanded_prompts]
 
-# Aplicar augmentación de datos
-prompts_aug, completions_aug, metadata_aug, intents_aug = augment_texts(prompts, expanded_completions, expanded_metadata, expanded_intents)
-print(f"Dataset expandido: {len(prompts_aug)} ejemplos de entrenamiento")
-print(f"Intents únicos: {set(intents_aug)}")
+    # Aplicar augmentación de datos
+    prompts_aug, completions_aug, metadata_aug, intents_aug = augment_texts_and_responses(prompts, expanded_completions, expanded_metadata, expanded_intents)
+    print(f"Dataset expandido: {len(prompts_aug)} ejemplos de entrenamiento")
+    print(f"Intents únicos: {set(intents_aug)}")
 
 # Tokenización
 tokenizer = Tokenizer(num_words=VOCAB_SIZE, oov_token='<OOV>')

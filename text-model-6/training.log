@@ -1,0 +1,43 @@
+Epoch 1: val_loss improved from None to 6.99784, saving model to best_model.keras
+
+Epoch 1: finished saving model to best_model.keras
+21/21 - 56s - 3s/step - intent_output_accuracy: 0.0982 - intent_output_loss: 4.2309 - loss: 6.9240 - response_output_accuracy: 0.0192 - response_output_loss: 4.7984 - val_intent_output_accuracy: 0.0000e+00 - val_intent_output_loss: 4.3859 - val_loss: 6.9978 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.7953 - learning_rate: 0.0012
+Epoch 2/28
+
+Epoch 2: val_loss did not improve from 6.99784
+21/21 - 50s - 2s/step - intent_output_accuracy: 0.1257 - intent_output_loss: 4.0227 - loss: 6.8172 - response_output_accuracy: 0.0084 - response_output_loss: 4.7971 - val_intent_output_accuracy: 0.0000e+00 - val_intent_output_loss: 4.3883 - val_loss: 7.0025 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.7996 - learning_rate: 0.0014
+Epoch 3/28
+
+Epoch 3: val_loss did not improve from 6.99784
+21/21 - 55s - 3s/step - intent_output_accuracy: 0.1401 - intent_output_loss: 3.8220 - loss: 6.6395 - response_output_accuracy: 0.0275 - response_output_loss: 4.7196 - val_intent_output_accuracy: 0.0358 - val_intent_output_loss: 4.3872 - val_loss: 7.0100 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.8079 - learning_rate: 0.0016
+Epoch 4/28
+
+Epoch 4: val_loss did not improve from 6.99784
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 0.0005376000073738396.
+21/21 - 82s - 4s/step - intent_output_accuracy: 0.1844 - intent_output_loss: 3.3623 - loss: 6.0112 - response_output_accuracy: 0.0982 - response_output_loss: 4.3190 - val_intent_output_accuracy: 0.0000e+00 - val_intent_output_loss: 4.3880 - val_loss: 7.0348 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.8316 - learning_rate: 5.3760e-04
+Epoch 5/28
+
+Epoch 5: val_loss did not improve from 6.99784
+21/21 - 80s - 4s/step - intent_output_accuracy: 0.2635 - intent_output_loss: 2.8846 - loss: 5.1519 - response_output_accuracy: 0.1904 - response_output_loss: 3.6983 - val_intent_output_accuracy: 0.0000e+00 - val_intent_output_loss: 4.3886 - val_loss: 7.0522 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.8484 - learning_rate: 7.3560e-04
+Epoch 6/28
+
+Epoch 6: val_loss did not improve from 6.99784
+21/21 - 55s - 3s/step - intent_output_accuracy: 0.3569 - intent_output_loss: 2.5365 - loss: 4.5420 - response_output_accuracy: 0.2647 - response_output_loss: 3.2630 - val_intent_output_accuracy: 0.0000e+00 - val_intent_output_loss: 4.3879 - val_loss: 7.0680 - val_response_output_accuracy: 0.0000e+00 - val_response_output_loss: 4.8642 - learning_rate: 7.3560e-04
+Epoch 6: early stopping
+Restoring model weights from the end of the best epoch: 1.
+Modelo entrenado y guardado
+Cargando modelo entrenado...
+🤖 Chatbot entrenado con dataset completo
+Escribí algo (o 'salir' para terminar):
+
+👤 Vos: hola 
+🤖 Bot: Como asistente virtual, solo puedo ayudarte con informacion relacionada a saferide y transporte seguro. ¿Puedes formular tu pregunta de otra manera?
+
+👤 Vos: como estas
+🤖 Bot: Claro, por favor ingresa tu correo y contraseña para continuar.
+
+👤 Vos: como puedo hacer un viaje 
+🤖 Bot: Claro, por favor ingresa tu correo y contraseña para continuar.
+
+👤 Vos: P
